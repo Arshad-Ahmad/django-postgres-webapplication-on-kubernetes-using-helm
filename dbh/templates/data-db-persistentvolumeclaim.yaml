@@ -1,0 +1,16 @@
+{{- if .Values.persistence.enable -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    service: {{ .Chart.Name | trimSuffix "-chart" }}
+  name: {{ .Chart.Name | trimSuffix "-chart" }}
+spec:
+  accessModes:
+    {{- range .Values.persistence.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storage }}
+{{- end }}

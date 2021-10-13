@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: {{ .Chart.Name | trimSuffix "-chart" }}
+  name: {{ .Chart.Name | trimSuffix "-chart" }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      service: {{ .Chart.Name | trimSuffix "-chart" }}
+  template:
+    metadata:
+      labels:
+        service: {{ .Chart.Name | trimSuffix "-chart" }}
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - python manage.py syncdb --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:5000
+          image: "{{ .Values.image.repository }}"
+          name: {{ .Chart.Name | trimSuffix "-chart" }}-con
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 250Mi
+      restartPolicy: Always
